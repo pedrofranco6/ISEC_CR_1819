@@ -2,23 +2,23 @@ clear all;
 close all;
 clc;
 
-imageSize = 20;
-
 oldImage = imread('Imagens/Formas_3/square/215.png');
 % [x y] = size(oldImage);
 
 noiselessImage = medfilt2(oldImage,[8 8],'symmetric');
-noiselessImage = imbinarize(noiselessImage);
+noiselessImage = 
 
-resizedImage = imresize(noiselessImage, [imageSize imageSize]);
+resizedImage = imbinarize(imresize(noiselessImage, [20 20]));
 
-leftCrop = round(find(imrotate(resizedImage,90)==0,1,'first')/imageSize)-1;
-topCrop = round(find(resizedImage==0,1,'first')/imageSize)-1;
-rightCrop = round(find(imrotate(resizedImage,90)==0,1,'last')/200)+1-leftCrop;
-bottomCrop = round(find(resizedImage==0,1,'last')/200)+1-topCrop;
-croppedImage = imcrop(resizedImage,[leftCrop topCrop rightCrop bottomCrop]);
+leftCrop = round(find(imrotate(noiselessImage,90)==0,1,'first')/200)-1;
+topCrop = round(find(noiselessImage==0,1,'first')/200)-1;
+rightCrop = round(find(imrotate(noiselessImage,90)==0,1,'last')/200)+1-leftCrop;
+bottomCrop = round(find(noiselessImage==0,1,'last')/200)+1-topCrop;
+croppedImage = imcrop(noiselessImage,[leftCrop topCrop rightCrop bottomCrop]);
 
-subplot(2,3,1);
+resizedImage = imbinarize(imresize(noiselessImage, [20 20]));
+
+subplot(,3,1);
 imshow(oldImage,'InitialMagnification','fit');
 title('Old Image');
 axis on;
