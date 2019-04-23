@@ -1,0 +1,31 @@
+clc;close all;clear all;
+
+circleImageDatabase = imageSet('Imagens/Formas_2/circle','recursive');
+squareImageDatabase = imageSet('Imagens/Formas_2/square','recursive');
+starImageDatabase = imageSet('Imagens/Formas_2/star','recursive');
+triangleImageDatabase = imageSet('Imagens/Formas_2/triangle','recursive');
+
+tic
+trainingSet = [];
+targetTrainingSet = [];
+for i=1:circleImageDatabase.Count
+    trainingSet = horzcat(trainingSet,reshape(imread(circleImageDatabase.ImageLocation{i}),1,[]));
+    targetTrainingSet = horzcat(targetTrainingSet, [1 0 0 0]);
+end
+for i=1:squareImageDatabase.Count
+    trainingSet = horzcat(trainingSet,reshape(imread(squareImageDatabase.ImageLocation{i}),1,[]));
+    targetTrainingSet = horzcat(targetTrainingSet, [0 1 0 0]);
+end
+for i=1:starImageDatabase.Count
+    trainingSet = horzcat(trainingSet,reshape(imread(starImageDatabase.ImageLocation{i}),1,[]));
+    targetTrainingSet = horzcat(targetTrainingSet, [0 0 1 0]);
+end
+for i=1:triangleImageDatabase.Count
+    trainingSet = horzcat(trainingSet,reshape(imread(triangleImageDatabase.ImageLocation{i}),1,[]));
+    targetTrainingSet = horzcat(targetTrainingSet, [0,0,0 1]);
+end
+trainingSet = transpose(trainingSet);
+targetTrainingSet = transpose(targetTrainingSet);
+
+% xlswrite('teste.csv',trainingSet)
+toc
