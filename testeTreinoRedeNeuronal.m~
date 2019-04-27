@@ -1,12 +1,11 @@
-clear all;
-close all;
-clc;
+close all;clearvars;clc;
 
-datasetDir = 'Imagens/Formas_2/';
-numRotations = 0;
+datasetTrainingDir = 'Imagens/Formas_2/';
+datasetTestingDir = 'Imagens/Formas_3/';
+numRotations = 4;
 imageSize = 20;
-hogFeatures = 0;
-boundaries = 0;
+hogFeatures = 1;
+boundaries = 1;
 % hogFeaturesStrongest = 0;
 % wantedCornerPoints = 5;
 
@@ -33,31 +32,39 @@ boundaries = 0;
 % % TEST SETS
 % testSet = [];
 % targetTestSet = [];
+tic
+[trainingSet,targetTrainingSet] = datasetGenerator(datasetTrainingDir,numRotations,imageSize,hogFeatures,boundaries);
+[testingSet,targetTestingSet] = datasetGenerator(datasetTestingDir,numRotations,imageSize,hogFeatures,boundaries);
+toc
 
-% [trainingSet,targetTrainingSet] = datasetGenerator(datasetDir,numRotations,imageSize,hogFeatures,boundaries);
-% 
-% net = feedforwardnet(10);
-% % net = patternnet(10);
-% net = train(net,trainingSet,targetTrainingSet);
-% out=sim(net,trainingSet);
-% 
-% r=0;
-% for i=1:length(out)
-%     a = out(i);
-%     b = targetTrainingSet(i);
-%     if abs(a-b) < 0.01
-%         r = r+1;
-%     end
-% end
-% 
-% precisao = r/length(out)*100
+net = feedforwardnet(10);
+% net = patternnet(10);
+net = train(net,trainingSet,targetTrainingSet);
 
-subplot(1,3,1);
-imshow(imageProcesser(imread('Imagens/Formas_2/circle/107.png'),20,0,0),'InitialMagnification','fit');
-axis on;
-subplot(1,3,2);
-imshow(imageProcesser(imread('Imagens/Formas_2/circle/107.png'),20),0,0,'InitialMagnification','fit');
-axis on;
-subplot(1,3,3);
-imshow(imageProcesser(imread('Imagens/Formas_2/circle/107.png'),20),'InitialMagnification','fit');
-axis on;
+out=sim(net,trainingSet);
+
+for t=0:10
+    disp(;
+    r=0;
+    for i=1:length(out)
+        a = out(i);
+        b = targetTrainingSet(i);
+        if abs(a-b) < 0.01
+            r = r+1;
+        end
+    end
+    
+    precisaoTreino = r/length(out)*100
+    
+    out=sim(net,testingSet);
+    r=0;
+    for i=1:length(out)
+        a = out(i);
+        b = targetTestingSet(i);
+        if abs(a-b) < 0.01
+            r = r+1;
+        end
+    end
+    
+    precisaoTeste = r/length(out)*100
+end

@@ -1,13 +1,12 @@
-clear all;
-close all;
-clc;
+close all;clearvars;clc;
 
 datasetTrainingDir = 'Imagens/Formas_2/';
 datasetTestingDir = 'Imagens/Formas_3/';
-numRotations = 0;
+numRotations = 4;
 imageSize = 20;
 hogFeatures = 1;
-boundaries = 0;
+boundaries = 1;
+
 % hogFeaturesStrongest = 0;
 % wantedCornerPoints = 5;
 
@@ -31,26 +30,44 @@ boundaries = 0;
 %     trainingSet = vertcat(trainingSet,hogFeaturesArray);
 % end
 
-% % TEST SETS
-% testSet = [];
-% targetTestSet = [];
 tic
 [trainingSet,targetTrainingSet] = datasetGenerator(datasetTrainingDir,numRotations,imageSize,hogFeatures,boundaries);
 [testingSet,targetTestingSet] = datasetGenerator(datasetTestingDir,numRotations,imageSize,hogFeatures,boundaries);
 toc
-
+fprintf('\n');
+tic
 net = feedforwardnet(10);
 % net = patternnet(10);
-net = train(net,trainingSet,targetTrainingSet);
-out=sim(net,testingSet);
 
-r=0;
-for i=1:length(out)
-    a = out(i);
-    b = targetTestingSet(i);
-    if abs(a-b) < 0.01
-        r = r+1;
+for t=0:10
+    disp(strcat('Rede:',num2str(t)));
+    
+    net = train(net,trainingSet,targetTrainingSet);
+    
+    out=sim(net,trainingSet);
+    r=0;
+    for i=1:length(out)
+        a = out(i);
+        b = targetTrainingSet(i);
+        if abs(a-b) < 0.01
+            r = r+1;
+        end
     end
+    precisaoTreino = r/length(out)*100;
+    disp(strcat('Precisao Treino:',num2str(precisaoTreino)));
+    
+    out=sim(net,testingSet);
+    r=0;
+    for i=1:length(out)
+        a = out(i);
+        b = targetTestingSet(i);
+        if abs(a-b) < 0.01
+            r = r+1;
+        end
+    end
+    
+    precisaoTeste = r/length(out)*100;
+    disp(strcat('Precisao Teste:',num2str(precisaoTeste)));
+    fprintf('\n');
 end
-
-precisao = r/length(out)*100
+toc
