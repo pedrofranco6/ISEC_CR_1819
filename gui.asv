@@ -22,16 +22,16 @@ function varargout = gui(varargin)
 
 % Edit the above text to modify the response to help gui
 
-% Last Modified by GUIDE v2.5 02-May-2019 01:27:26
+% Last Modified by GUIDE v2.5 02-May-2019 00:53:18
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
 gui_State = struct('gui_Name',       mfilename, ...
-    'gui_Singleton',  gui_Singleton, ...
-    'gui_OpeningFcn', @gui_OpeningFcn, ...
-    'gui_OutputFcn',  @gui_OutputFcn, ...
-    'gui_LayoutFcn',  [] , ...
-    'gui_Callback',   []);
+                   'gui_Singleton',  gui_Singleton, ...
+                   'gui_OpeningFcn', @gui_OpeningFcn, ...
+                   'gui_OutputFcn',  @gui_OutputFcn, ...
+                   'gui_LayoutFcn',  [] , ...
+                   'gui_Callback',   []);
 if nargin && ischar(varargin{1})
     gui_State.gui_Callback = str2func(varargin{1});
 end
@@ -63,7 +63,7 @@ guidata(hObject, handles);
 
 
 % --- Outputs from this function are returned to the command line.
-function varargout = gui_OutputFcn(hObject, eventdata, handles)
+function varargout = gui_OutputFcn(hObject, eventdata, handles) 
 % varargout  cell array for returning output args (see VARARGOUT);
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -95,9 +95,8 @@ function selectFolderBtn_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 selpath = uigetdir();
-set(handles.imageDirectory, 'String', selpath);
+set(handles.text3, 'String', selpath);
 
-% guidata(hObject,handles);
 
 
 function numRotations_Callback(hObject, eventdata, handles)
@@ -108,12 +107,9 @@ function numRotations_Callback(hObject, eventdata, handles)
 % Hints: get(hObject,'String') returns contents of numRotations as text
 %        str2double(get(hObject,'String')) returns contents of numRotations as a double
 % str=get(hObject,'String');
-numRotations = str2num(get(hObject,'String'));
-if isempty(numRotations)
+if isempty(str2num(get(hObject,'String')))
     set(hObject,'string','0');
     warndlg('Input must be numerical');
-elseif numRotations > 10
-    warndlg('Bigger datasets will take longer to process');
 end
 
 
@@ -135,7 +131,7 @@ function createDatasetBtn_Callback(hObject, eventdata, handles)
 % hObject    handle to createDatasetBtn (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-% [trainingSet,targetTrainingSet] = datasetGenerator(get(handles.imageDirectory, 'String'),get(handles.numRotations, 'String'),imageSize,hogFeatures,boundaries)
+disp(get(handles.numRotations, 'String'));
 
 
 % --- Executes on button press in checkbox1.
@@ -177,10 +173,7 @@ imageSize = str2num(get(hObject,'String'));
 if isempty(imageSize)
     set(hObject,'string','0');
     warndlg('Input must be numerical');
-elseif imageSize < 20
-    warndlg('Image side size lower then 20 pixels is highly discouraged');
-elseif imageSize > 50
-    warndlg('Images with side size greater than 50 pixels will take longer to process');
+else if(imageSize)
 end
 
 % --- Executes during object creation, after setting all properties.
