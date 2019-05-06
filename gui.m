@@ -1,30 +1,4 @@
 function varargout = gui(varargin)
-% GUI MATLAB code for gui.fig
-%      GUI, by itself, creates a new GUI or raises the existing
-%      singleton*.
-%
-%      H = GUI returns the handle to a new GUI or the handle to
-%      the existing singleton*.
-%
-%      GUI('CALLBACK',hObject,eventData,handles,...) calls the local
-%      function named CALLBACK in GUI.M with the given input arguments.
-%
-%      GUI('Property','Value',...) creates a new GUI or raises the
-%      existing singleton*.  Starting from the left, property value pairs are
-%      applied to the GUI before gui_OpeningFcn gets called.  An
-%      unrecognized property name or invalid value makes property application
-%      stop.  All inputs are passed to gui_OpeningFcn via varargin.
-%
-%      *See GUI Options on GUIDE's Tools menu.  Choose "GUI allows only one
-%      instance to run (singleton)".
-%
-% See also: GUIDE, GUIDATA, GUIHANDLES
-
-% Edit the above text to modify the response to help gui
-
-% Last Modified by GUIDE v2.5 02-May-2019 01:27:26
-
-% Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
 gui_State = struct('gui_Name',       mfilename, ...
     'gui_Singleton',  gui_Singleton, ...
@@ -41,73 +15,26 @@ if nargout
 else
     gui_mainfcn(gui_State, varargin{:});
 end
-% End initialization code - DO NOT EDIT
-
 
 % --- Executes just before gui is made visible.
 function gui_OpeningFcn(hObject, eventdata, handles, varargin)
-% This function has no output args, see OutputFcn.
-% hObject    handle to figure
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-% varargin   command line arguments to gui (see VARARGIN)
-
 % Choose default command line output for gui
 handles.output = hObject;
-
 % Update handles structure
 guidata(hObject, handles);
 
-% UIWAIT makes gui wait for user response (see UIRESUME)
-% uiwait(handles.figure1);
-
-
 % --- Outputs from this function are returned to the command line.
 function varargout = gui_OutputFcn(hObject, eventdata, handles)
-% varargout  cell array for returning output args (see VARARGOUT);
-% hObject    handle to figure
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Get default command line output from handles structure
 varargout{1} = handles.output;
-
-
-% --- Executes on button press in pushbutton1.
-function pushbutton1_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton1 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-set(handles.text2, 'String', 'asdasd');
-
-
-% --- Executes on button press in pushbutton2.
-function pushbutton2_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton2 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-disp(get(handles.text2, 'String'));
 
 
 % --- Executes on button press in selectFolderBtn.
 function selectFolderBtn_Callback(hObject, eventdata, handles)
-% hObject    handle to selectFolderBtn (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-selpath = uigetdir();
-set(handles.imageDirectory, 'String', selpath);
+if ispc; lastSlash = '\'; else; lastSlash = '/'; end
+set(handles.imageDirectory, 'String', strcat(uigetdir(),lastSlash));
 
-% guidata(hObject,handles);
-
-
+% --- Executes on button press in numRotations.
 function numRotations_Callback(hObject, eventdata, handles)
-% hObject    handle to numRotations (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of numRotations as text
-%        str2double(get(hObject,'String')) returns contents of numRotations as a double
-% str=get(hObject,'String');
 numRotations = str2num(get(hObject,'String'));
 if isempty(numRotations)
     set(hObject,'string','0');
@@ -116,63 +43,14 @@ elseif numRotations > 10
     warndlg('Bigger datasets will take longer to process');
 end
 
-
 % --- Executes during object creation, after setting all properties.
 function numRotations_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to numRotations (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
 
-
-% --- Executes on button press in createDatasetBtn.
-function createDatasetBtn_Callback(hObject, eventdata, handles)
-% hObject    handle to createDatasetBtn (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-% [trainingSet,targetTrainingSet] = datasetGenerator(get(handles.imageDirectory, 'String'),get(handles.numRotations, 'String'),imageSize,hogFeatures,boundaries)
-
-
-% --- Executes on button press in checkbox1.
-function checkbox1_Callback(hObject, eventdata, handles)
-% hObject    handle to checkbox1 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of checkbox1
-
-
-% --- Executes on button press in hogFeatures.
-function hogFeatures_Callback(hObject, eventdata, handles)
-% hObject    handle to hogFeatures (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of hogFeatures
-
-
-% --- Executes on button press in boudaries.
-function boudaries_Callback(hObject, eventdata, handles)
-% hObject    handle to boudaries (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of boudaries
-
-
-
+% --- Executes on button press in imageSize.
 function imageSize_Callback(hObject, eventdata, handles)
-% hObject    handle to imageSize (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of imageSize as text
-%        str2double(get(hObject,'String')) returns contents of imageSize as a double
 imageSize = str2num(get(hObject,'String'));
 if isempty(imageSize)
     set(hObject,'string','0');
@@ -185,12 +63,44 @@ end
 
 % --- Executes during object creation, after setting all properties.
 function imageSize_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to imageSize (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
 
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
+% --- Executes on button press in hogFeatures.
+function hogFeatures_Callback(hObject, eventdata, handles)
+
+% --- Executes on button press in boundaries.
+function boundaries_Callback(hObject, eventdata, handles)
+
+% --- Executes on button press in createDatasetBtn.
+function createDatasetBtn_Callback(hObject, eventdata, handles)
+if strcmp(get(handles.imageDirectory,'String'), ' ')
+    errordlg('Valid directory must be chosen');
+else
+    if strcmp(get(handles.datasetName,'String'),' ')
+        errordlg('Dataset name must be chosen');
+    else
+        wb = waitbar(.5,'Generating Dataset...');
+        [handles.trainingSet,handles.targetTrainingSet] = datasetGenerator(get(handles.imageDirectory,'String'),str2num(get(handles.numRotations,'String')),str2num(get(handles.imageSize,'String')),get(handles.hogFeatures,'Value'),get(handles.boundaries,'Value'),get(handles.exportDataset,'Value'),get(handles.datasetName,'String'));
+        guidata(hObject,handles);
+        delete(wb);
+        helpdlg('Dataset finished!');
+    end
+end
+
+% --- Executes on button press in exportDataset.
+function exportDataset_Callback(hObject, eventdata, handles)
+if get(handles.exportDataset,'Value')
+    set(handles.datasetName,'Enable','on');
+else
+    set(handles.datasetName,'Enable','off');
+end
+
+function datasetName_Callback(hObject, eventdata, handles)
+
+% --- Executes during object creation, after setting all properties.
+function datasetName_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end

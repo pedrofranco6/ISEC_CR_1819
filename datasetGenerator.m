@@ -1,4 +1,4 @@
-function [trainingSet,targetTrainingSet] = datasetGenerator(directory,numRotations,imageSize,hogFeatures,boundaries)
+function [trainingSet,targetTrainingSet] = datasetGenerator(directory,numRotations,imageSize,hogFeatures,boundaries,exportDataset,datasetName)
 
 filelist = dir(directory);
 dirlist = filelist([filelist(:).isdir]);
@@ -33,6 +33,10 @@ for i=1:length(dirlist)
     end
 end
 
-% save asd trainingSet targetTrainingSet;
+if exportDataset
+    if ispc; datasetDirectory = 'Datasets\'; else; datasetDirectory = 'Datasets/'; end
+    fullDatasetName = strcat(datasetDirectory,datasetName,'_',strcat(datestr(now,'dd-mm-yyyy'),'_',datestr(now,'HH-MM-SS')))
+    save(fullDatasetName,'trainingSet','targetTrainingSet');
+end
 
 end
