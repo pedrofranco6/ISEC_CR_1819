@@ -281,7 +281,7 @@ userDraw(handles);
 
 % --- Executes on button press in pushbutton15.
 function pushbutton15_Callback(hObject, eventdata, handles)
-plotmatrix(handles.axesUserDraw)
-
+a = get(handles.axesUserDraw,'Children');
+a(1).XData
 % disp(getimage(get(handles.axesUserDraw,'childer')));
 % cla(handles.axesUserDraw);
