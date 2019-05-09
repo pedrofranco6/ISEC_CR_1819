@@ -21,8 +21,8 @@ function gui_OpeningFcn(hObject, eventdata, handles, varargin)
 % Choose default command line output for gui
 handles.output = hObject;
 % Instanciate network configuration variables
-handles.numNeuronsPerLayer = [10 10 10];
-handles.activFunctionPerLayer = {'poslin' 'poslin' 'poslin'};
+handles.numNeuronsPerLayer = [4 6 8];
+handles.activFunctionPerLayer = {'purelin' 'softmax' 'tribas'};
 % Update handles structure
 guidata(hObject, handles);
 
@@ -48,10 +48,6 @@ end
 
 % --- Executes during object creation, after setting all properties.
 function numRotations_CreateFcn(hObject, eventdata, handles)
-if ~ispc
-    set(hObject,'InnerPosition',[238.5 153.8077])
-    % 238.5 153.8077
-end
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
@@ -238,8 +234,7 @@ end
 function numNeurons_Callback(hObject, eventdata, handles)
 selectedRadioButton = str2num(get(get(handles.confHiddenLayerSelection,'SelectedObject'),'String'));
 % set(handles.numNeurons,'String',handles.numNeuronsPerLayer(selectedRadioButton));
-handles.numNeuronsPerLayer(selectedRadioButton) =  str2num(get(handles.numNeurons,'String'));
-guidata(hObject, handles);
+handles.numNeuronsPerLayer(1) =  'asd';
 
 % --- Executes during object creation, after setting all properties.
 function numNeurons_CreateFcn(hObject, eventdata, handles)
@@ -250,8 +245,7 @@ end
 % --- Executes on selection change in activationFunction.
 function activationFunction_Callback(hObject, eventdata, handles)
 activationFunctions = get(handles.activationFunction,'String');
-handles.activFunctionPerLayer{str2num(get(get(handles.confHiddenLayerSelection,'SelectedObject'),'String'))} = cellstr(activationFunctions{get(handles.activationFunction,'Value')});
-% handles.activFunctionPerLayer(str2num(get(get(handles.confHiddenLayerSelection,'SelectedObject'),'String')))
+handles.activationFunction{str2num(get(get(handles.confHiddenLayerSelection,'SelectedObject'),'String'))} = cellstr(activationFunctions{get(handles.activationFunction,'Value')});
 guidata(hObject, handles);
 
 % --- Executes during object creation, after setting all properties.
@@ -268,23 +262,6 @@ teste = strings{get(handles.activationFunction,'Value')}
 % --- Executes when selected object is changed in confHiddenLayerSelection.
 function confHiddenLayerSelection_SelectionChangedFcn(hObject, eventdata, handles)
 selectedRadioButton = str2num(get(get(handles.confHiddenLayerSelection,'SelectedObject'),'String'));
-set(handles.numNeurons,'String',num2str(handles.numNeuronsPerLayer(selectedRadioButton)));
+set(handles.numNeurons,'String',handles.numNeuronsPerLayer(selectedRadioButton));
+handles.numNeuronsPerLayer(selectedRadioButton)
 set(handles.activationFunction,'Value',find(contains(get(handles.activationFunction,'String'),handles.activFunctionPerLayer{selectedRadioButton})));
-
-
-% --- Executes on selection change in popupmenu5.
-function popupmenu5_Callback(hObject, eventdata, handles)
-
-% --- Executes during object creation, after setting all properties.
-function popupmenu5_CreateFcn(hObject, eventdata, handles)
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-function edit12_Callback(hObject, eventdata, handles)
-
-% --- Executes during object creation, after setting all properties.
-function edit12_CreateFcn(hObject, eventdata, handles)
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
