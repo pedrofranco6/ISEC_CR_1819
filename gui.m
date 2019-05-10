@@ -51,7 +51,7 @@ function numRotations_CreateFcn(hObject, eventdata, handles)
 if ispc
     set(hObject,'Position',[164.5 123.75 36.75 16.5]);
 else
-    set(hObject,'InnerPosition',[238.5 153.8077]);
+    set(hObject,'Position',[238.5 132.808 36.75 16.5]);
 end
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
@@ -74,7 +74,7 @@ function imageSize_CreateFcn(hObject, eventdata, handles)
 if ispc
     set(hObject,'Position',[165.0 105.0 36.0 16.5]);
 else
-    set(hObject,'InnerPosition',[238.5 153.8077]);
+    set(hObject,'Position',[238.5 153.8077 36.0 16.5]);
 end
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
@@ -129,34 +129,13 @@ function importDatasetBtn_Callback(hObject, eventdata, handles)
 % --- END *IMPORT DATASET* END ---
 
 % --- START *NETWORK TRAINING* START ---
-% --- Executes during object creation, after setting all properties.
-function trainingFunctionText_CreateFcn(hObject, eventdata, handles)
-if ispc
-    set(hObject,'Position',[4.714 18.938 27 1.062]);
-else
-    set(hObject,'InnerPosition',[4.714 18.938 15.714 1.062]);
-end
-
 % --- Executes on selection change in trainingFunction.
 function trainingFunction_Callback(hObject, eventdata, handles)
 
 % --- Executes during object creation, after setting all properties.
 function trainingFunction_CreateFcn(hObject, eventdata, handles)
-if ispc
-    set(hObject,'Position',[32.2 19.077 15 1.385]);
-else
-    %     set(hObject,'InnerPosition',[4.714 18.938 15.714 1.062]);
-end
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
-end
-
-% --- Executes during object creation, after setting all properties.
-function numHiddenLayersText_CreateFcn(hObject, eventdata, handles)
-if ispc
-    set(hObject,'Position',[4.714 16.846 27.4 1.077]);
-else
-    set(hObject,'InnerPosition',[4.714 16.625 22.857 1.063]);
 end
 
 % --- Executes on selection change in numHiddenLayersDropdown.
@@ -179,7 +158,7 @@ function numHiddenLayersDropdown_CreateFcn(hObject, eventdata, handles)
 if ispc
     set(hObject,'Position',[32.2 16.462 8.6 1.923]);
 else
-    set(hObject,'InnerPosition',[32.2 16.462 5 8.6 1.923]);
+    set(hObject,'Position',[32.2 16.462 8.6 1.923]);
 end
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
@@ -190,7 +169,7 @@ function confHiddenLayerText_CreateFcn(hObject, eventdata, handles)
 if ispc
     set(hObject,'Position',[4.8 14.769 36.5 1.077]);
 else
-    set(hObject,'InnerPosition',[4.8 14.769 30.8 1.077]);
+    set(hObject,'Position',[4.8 14.769 30.8 1.077]);
 end
 
 % --- Executes when selected object is changed in confHiddenLayerSelection.
@@ -204,7 +183,7 @@ function hiddenLayer1_CreateFcn(hObject, eventdata, handles)
 if ispc
     set(hObject,'Position',[5.7 0.312 5.857 1.062]);
 else
-    set(hObject,'InnerPosition',[2.714 0.312 5.857 1.062]);
+    set(hObject,'Position',[2.714 0.312 5.857 1.062]);
 end
 
 % --- Executes during object creation, after setting all properties.
@@ -212,7 +191,7 @@ function hiddenLayer2_CreateFcn(hObject, eventdata, handles)
 if ispc
     set(hObject,'Position',[13.3 0.312 5.857 1.062]);
 else
-    set(hObject,'InnerPosition',[11.857 0.312 5.857 1.062]);
+    set(hObject,'Position',[11.857 0.312 5.857 1.062]);
 end
 
 % --- Executes during object creation, after setting all properties.
@@ -220,7 +199,7 @@ function hiddenLayer3_CreateFcn(hObject, eventdata, handles)
 if ispc
     set(hObject,'Position',[21.2 0.312 5.857 1.062]);
 else
-    set(hObject,'InnerPosition',[21.286 0.312 5.857 1.062]);
+    set(hObject,'Position',[21.286 0.312 5.857 1.062]);
 end
 
 % --- Executes during object creation, after setting all properties.
@@ -228,7 +207,7 @@ function numNeuronsText_CreateFcn(hObject, eventdata, handles)
 if ispc
     set(hObject,'Position',[2.2 1.538 19.6 1.077]);
 else
-    set(hObject,'InnerPosition',[2.2 1.538 16.6 1.077]);
+    set(hObject,'Position',[2.2 1.3 16.6 1.077]);
 end
 
 % --- Executes on numNeurons field edit.
@@ -243,18 +222,10 @@ function numNeurons_CreateFcn(hObject, eventdata, handles)
 if ispc
     set(hObject,'Position',[82.5 12 27.75 16.5]);
 else
-    set(hObject,'InnerPosition',[98.25 15.75]);
+    set(hObject,'Position',[98.25 15.75 27.75 16.5]);
 end
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
-end
-
-% --- Executes during object creation, after setting all properties.
-function activationFunctionText_CreateFcn(hObject, eventdata, handles)
-if ispc
-    set(hObject,'Position',[34 2.5 21.2 0.875]);
-else
-    set(hObject,'InnerPosition',[34.857 2.5 17.286 0.875]);
 end
 
 % --- Executes on selection change in activationFunction.
@@ -275,7 +246,7 @@ function trainingRepetitionsText_CreateFcn(hObject, eventdata, handles)
 if ispc
     set(hObject,'Position',[3.2 7.625 54 1.062]);
 else
-    set(hObject,'InnerPosition',[4.714 7.625 47.429 1.062]);
+    set(hObject,'Position',[4.714 7.625 47.429 1.062]);
 end
 
 function trainingRepetitions_Callback(hObject, eventdata, handles)
@@ -285,7 +256,7 @@ function trainingRepetitions_CreateFcn(hObject, eventdata, handles)
 if ispc
     set(hObject,'Position',[214.5 72 27.75 16.5]);
 else
-    set(hObject,'InnerPosition',[273 90 36.75 16.5]);
+    set(hObject,'Position',[273 90 36.75 16.5]);
 end
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
@@ -301,7 +272,7 @@ function trainNetworkBtn_CreateFcn(hObject, eventdata, handles)
 if ispc
     set(hObject,'Position',[50 0.625 16.8 1.688]);
 else
-    set(hObject,'InnerPosition',[53.286 0.625 13.857 1.688]);
+    set(hObject,'Position',[53.286 0.625 13.857 1.688]);
 end
 % --- END *NETWORK TRAINING* END ---
 
