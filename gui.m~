@@ -49,9 +49,9 @@ end
 % --- Executes during object creation, after setting all properties.
 function numRotations_CreateFcn(hObject, eventdata, handles)
 if ispc
-    set(hObject,'Position',[165.0 105.0 36.0 16.5]);
+    set(hObject,'Position',[164.5 123.75 36.75 16.5]);
 else
-    set(hObject,'Position',[238.5 153.8077 36.0 16.5]);
+    set(hObject,'Position',[238.5 132.808 36.75 16.5]);
 end
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
@@ -71,6 +71,7 @@ end
 
 % --- Executes during object creation, after setting all properties.
 function imageSize_CreateFcn(hObject, eventdata, handles)
+
 if ispc
     set(hObject,'Position',[164.5 123.75 36.75 16.5]);
 else
