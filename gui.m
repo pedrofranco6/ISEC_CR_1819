@@ -21,6 +21,14 @@ function gui_OpeningFcn(hObject, eventdata, handles, varargin)
 % Choose default command line output for gui
 handles.output = hObject;
 % Instanciate network configuration variables
+% Current Dataset variables
+handles.currentNumRotations = 0;
+handles.currentImageSize = 0;
+handles.currentBoundaries = 0;
+handles.currentHogFeatures = 0;
+handles.currentTrainingSet = [];
+handles.currentTargetTrainingSet = [];
+% Network Training variables
 handles.numNeuronsPerLayer = [10 10 10];
 handles.activFunctionPerLayer = {'poslin' 'poslin' 'poslin'};
 % Update handles structure
@@ -33,8 +41,11 @@ varargout{1} = handles.output;
 % --- START *GENERATE DATASET* START ---
 % --- Executes on button press in selectFolderDatasetBtn.
 function selectFolderDatasetBtn_Callback(hObject, eventdata, handles)
-if ispc; lastSlash = '\'; else; lastSlash = '/'; end
-set(handles.imageDirectory, 'String', strcat(uigetdir(),lastSlash));
+dir = uigetdir();
+if ~isequal(dir,0)
+    if ispc; slash = '\'; else; slash = '/'; end
+    set(handles.imageDirectory, 'String', strcat(dir,slash));
+end
 
 % --- Executes on button press in numRotations.
 function numRotations_Callback(hObject, eventdata, handles)
@@ -111,7 +122,15 @@ else
         errordlg('Dataset name must be chosen');
     else
         wb = waitbar(.5,'Generating Dataset...');
-        [handles.trainingSet,handles.targetTrainingSet] = datasetGenerator(get(handles.imageDirectory,'String'),str2num(get(handles.numRotations,'String')),str2num(get(handles.imageSize,'String')),get(handles.hogFeatures,'Value'),get(handles.boundaries,'Value'),get(handles.exportDataset,'Value'),get(handles.datasetName,'String'));
+        
+        handles.currentNumRotations = str2num(get(handles.numRotations,'String'));
+        handles.currentImageSize = str2num(get(handles.imageSize,'String'));
+        handles.currentBoundaries = get(handles.boundaries,'Value');
+        handles.currentHogFeatures = get(handles.hogFeatures,'Value');
+        
+        [handles.currentTrainingSet,handles.currentTargetTrainingSet] = datasetGenerator(get(handles.imageDirectory,'String'),handles.currentNumRotations,handles.currentImageSize,handles.currentBoundaries,handles.currentHogFeatures,get(handles.exportDataset,'Value'),get(handles.datasetName,'String'));
+        handles.currentTrainingSet
+        %[handles.currentTrainingSet,handles.currentTargetTrainingSet] = datasetGenerator(get(handles.imageDirectory,'String'),str2num(get(handles.numRotations,'String')),str2num(get(handles.imageSize,'String')),get(handles.boundaries,'Value'),get(handles.hogFeatures,'Value'),get(handles.exportDataset,'Value'),get(handles.datasetName,'String'));
         guidata(hObject,handles);
         delete(wb);
         helpdlg('Dataset finished!');
@@ -122,10 +141,35 @@ end
 % --- START *IMPORT DATASET* START ---
 % --- Executes on button press in selectDatasetBtn.
 function selectDatasetBtn_Callback(hObject, eventdata, handles)
-set(handles.datasetDirectory, 'String', uigetfile('*.mat'));
+file = uigetfile('Datasets','*.mat');
+if ~isequal(file,0)
+    set(handles.datasetDirectory, 'String', file);
+end
 
 % --- Executes on button press in importDatasetBtn.
 function importDatasetBtn_Callback(hObject, eventdata, handles)
+if strcmp(get(handles.datasetDirectory,'String'), ' ')
+    errordlg('Valid directory must be chosen');
+else
+    if ispc; datasetDirectory = 'Datasets\'; else; datasetDirectory = 'Datasets/'; end;
+    wb = waitbar(.5,'Importing Dataset...');
+    
+    fullDatasetName = strcat(datasetDirectory,get(handles.datasetDirectory, 'String'));
+    load(fullDatasetName,'numRotations','imageSize','boundaries','hogFeatures','trainingSet','targetTrainingSet')
+
+    handles.currentNumRotations = numRotations;
+    handles.currentImageSize = imageSize;
+    handles.currentBoundaries = boundaries;
+    handles.currentHogFeatures = hogFeatures;
+    handles.currentNumRotations = numRotations;
+    handles.currentTrainingSet = trainingSet;
+    handles.currentTargetTrainingSet = targetTrainingSet;
+
+    guidata(hObject, handles);
+    
+    delete(wb);
+    helpdlg('Dataset Imported!');
+end
 % --- END *IMPORT DATASET* END ---
 
 % --- START *NETWORK TRAINING* START ---

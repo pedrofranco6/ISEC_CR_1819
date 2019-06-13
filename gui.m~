@@ -21,6 +21,14 @@ function gui_OpeningFcn(hObject, eventdata, handles, varargin)
 % Choose default command line output for gui
 handles.output = hObject;
 % Instanciate network configuration variables
+% Current Dataset variables
+handles.currentNumRotations = 0;
+handles.currentImageSize = 0;
+handles.currentBoundaries = 0;
+handles.currentHogFeatures = 0;
+handles.currentTrainingSet = [];
+handles.currentTargetTrainingSet = [];
+% Network Training variables
 handles.numNeuronsPerLayer = [10 10 10];
 handles.activFunctionPerLayer = {'poslin' 'poslin' 'poslin'};
 % Update handles structure
@@ -33,8 +41,11 @@ varargout{1} = handles.output;
 % --- START *GENERATE DATASET* START ---
 % --- Executes on button press in selectFolderDatasetBtn.
 function selectFolderDatasetBtn_Callback(hObject, eventdata, handles)
-if ispc; lastSlash = '\'; else; lastSlash = '/'; end
-set(handles.imageDirectory, 'String', strcat(uigetdir(),lastSlash));
+dir = uigetdir();
+if ~isequal(dir,0)
+    if ispc; slash = '\'; else; slash = '/'; end
+    set(handles.imageDirectory, 'String', strcat(dir,slash));
+end
 
 % --- Executes on button press in numRotations.
 function numRotations_Callback(hObject, eventdata, handles)
@@ -49,9 +60,9 @@ end
 % --- Executes during object creation, after setting all properties.
 function numRotations_CreateFcn(hObject, eventdata, handles)
 if ispc
-    set(hObject,'Position',[164.5 123.75 36.75 16.5]);
+    set(hObject,'Position',[165.0 105.0 36.0 16.5]);
 else
-    set(hObject,'Position',[238.5 132.808 36.75 16.5]);
+    set(hObject,'Position',[238.5 153.8077 36.0 16.5]);
 end
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
@@ -71,7 +82,6 @@ end
 
 % --- Executes during object creation, after setting all properties.
 function imageSize_CreateFcn(hObject, eventdata, handles)
-
 if ispc
     set(hObject,'Position',[164.5 123.75 36.75 16.5]);
 else
@@ -112,7 +122,15 @@ else
         errordlg('Dataset name must be chosen');
     else
         wb = waitbar(.5,'Generating Dataset...');
-        [handles.trainingSet,handles.targetTrainingSet] = datasetGenerator(get(handles.imageDirectory,'String'),str2num(get(handles.numRotations,'String')),str2num(get(handles.imageSize,'String')),get(handles.hogFeatures,'Value'),get(handles.boundaries,'Value'),get(handles.exportDataset,'Value'),get(handles.datasetName,'String'));
+        handles.currentNumRotations = numRotations;
+    handles.currentImageSize = imageSize;
+    handles.currentBoundaries = boundaries;
+    handles.currentHogFeatures = hogFeatures;
+    handles.currentNumRotations = numRotations;
+    handles.currentTrainingSet = trainingSet;
+    handles.currentTargetTrainingSet = targetTrainingSet;
+    
+        [handles.currentTrainingSet,handles.currentTargetTrainingSet] = datasetGenerator(get(handles.imageDirectory,'String'),str2num(get(handles.numRotations,'String')),str2num(get(handles.imageSize,'String')),get(handles.boundaries,'Value'),get(handles.hogFeatures,'Value'),get(handles.exportDataset,'Value'),get(handles.datasetName,'String'));
         guidata(hObject,handles);
         delete(wb);
         helpdlg('Dataset finished!');
@@ -123,10 +141,35 @@ end
 % --- START *IMPORT DATASET* START ---
 % --- Executes on button press in selectDatasetBtn.
 function selectDatasetBtn_Callback(hObject, eventdata, handles)
-set(handles.datasetDirectory, 'String', uigetfile('*.mat'));
+file = uigetfile('Datasets','*.mat');
+if ~isequal(file,0)
+    set(handles.datasetDirectory, 'String', file);
+end
 
 % --- Executes on button press in importDatasetBtn.
 function importDatasetBtn_Callback(hObject, eventdata, handles)
+if strcmp(get(handles.datasetDirectory,'String'), ' ')
+    errordlg('Valid directory must be chosen');
+else
+    if ispc; datasetDirectory = 'Datasets\'; else; datasetDirectory = 'Datasets/'; end;
+    wb = waitbar(.5,'Importing Dataset...');
+    
+    fullDatasetName = strcat(datasetDirectory,get(handles.datasetDirectory, 'String'));
+    load(fullDatasetName,'numRotations','imageSize','boundaries','hogFeatures','trainingSet','targetTrainingSet')
+
+    handles.currentNumRotations = numRotations;
+    handles.currentImageSize = imageSize;
+    handles.currentBoundaries = boundaries;
+    handles.currentHogFeatures = hogFeatures;
+    handles.currentNumRotations = numRotations;
+    handles.currentTrainingSet = trainingSet;
+    handles.currentTargetTrainingSet = targetTrainingSet;
+
+    guidata(hObject, handles);
+    
+    delete(wb);
+    helpdlg('Dataset Imported!');
+end
 % --- END *IMPORT DATASET* END ---
 
 % --- START *NETWORK TRAINING* START ---
