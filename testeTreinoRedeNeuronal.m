@@ -2,7 +2,7 @@ close all;clearvars;clc;
 
 datasetTrainingDir = 'Imagens/Formas_2/';
 datasetTestingDir = 'Imagens/Formas_3/';
-numRotations = 4;
+numRotations = 0;
 imageSize = 20;
 hogFeatures = 1;
 boundaries = 1;
@@ -22,8 +22,8 @@ trainFunction = 'trainlm';
 % 'traingd' % Gradient Descent
 
 tic
-[trainingSet,targetTrainingSet] = datasetGenerator(datasetTrainingDir,numRotations,imageSize,hogFeatures,boundaries);
-[testingSet,targetTestingSet] = datasetGenerator(datasetTestingDir,0,imageSize,hogFeatures,boundaries);
+[trainingSet,targetTrainingSet] = datasetGenerator(datasetTrainingDir,numRotations,imageSize,hogFeatures,boundaries,0,'');
+[testingSet,targetTestingSet] = datasetGenerator(datasetTestingDir,0,imageSize,hogFeatures,boundaries,0,'');
 toc
 
 fprintf('\n');

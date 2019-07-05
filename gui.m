@@ -11,7 +11,7 @@ if nargin && ischar(varargin{1})
 end
 
 if nargout
-    [varargout{1:nargout}] = gui_mainfcn(gui_State, varargin{:});
+    [varargout{1:nargouxt}] = gui_mainfcn(gui_State, varargin{:});
 else
     gui_mainfcn(gui_State, varargin{:});
 end
@@ -149,7 +149,7 @@ end
 % --- Executes on button press in importDatasetBtn.
 function importDatasetBtn_Callback(hObject, eventdata, handles)
 if strcmp(get(handles.datasetDirectory,'String'), ' ')
-    errordlg('Valid directory must be chosen');
+    errordlg('Valid dataset must be chosen');
 else
     if ispc; datasetDirectory = 'Datasets\'; else; datasetDirectory = 'Datasets/'; end;
     wb = waitbar(.5,'Importing Dataset...');
@@ -308,8 +308,31 @@ end
 
 % --- Executes on button press in trainNetworkBtn.
 function trainNetworkBtn_Callback(hObject, eventdata, handles)
-strings = get(handles.activationFunction,'String');
-teste = strings{get(handles.activationFunction,'Value')}
+% strings = get(handles.activationFunction,'String');
+% teste = strings{get(handles.activationFunction,'Value')}
+
+tempHiddenLayersNeutrons = [];
+tempHiddenLayersActvFuncs = [];
+for tempHiidenLayerNum=1:get(handles.numHiddenLayersDropdown,'Value')
+   tempHiddenLayersNeutrons = [tempHiddenLayersNeutrons handles.numNeuronsPerLayer(tempHiidenLayerNum)];
+end
+% disp(tempHiddenLayersNeutrons);
+
+% disp(handles.numNeuronsPerLayer(tempHiidenLayerNum))
+% disp(handles.activFunctionPerLayer{tempHiidenLayerNum})
+
+emptyNetwork = feedforwardnet(tempHiddenLayersNeutrons);
+% substring(string, i, l)
+trainingFunctionTemp = get(handles.trainingFunction,'String');
+
+emptyNetwork.trainFcn = trainingFunctionTemp(get(handles.trainingFunction,'Value'));
+% disp(get(handles.trainingFunction,'Value'))
+
+trainedNetwork = train(emptyNetwork,handles.currentTrainingSet,handles.currentTargetTrainingSet,'useParallel','no');
+helpdlg('Network training ended succesfully!');
+
+% precisaoTreino=100-perform(net,targetTrainingSet,net(trainingSet));
+% disp(strcat('Precisao Treino:',num2str(precisaoTreino)));
 
 % --- Executes during object creation, after setting all properties.
 function trainNetworkBtn_CreateFcn(hObject, eventdata, handles)
@@ -323,9 +346,24 @@ end
 % --- START *TEST SAMPLES* START ---
 % --- Executes on button press in selectFolderTestSamplesBtn.
 function selectFolderTestSamplesBtn_Callback(hObject, eventdata, handles)
+dir = uigetdir();
+if ~isequal(dir,0)
+    if ispc; slash = '\'; else; slash = '/'; end
+    set(handles.testSamplesDirectory, 'String', strcat(dir,slash));
+end
 
 % --- Executes on button press in importTestSamplesBtn.
 function importTestSamplesBtn_Callback(hObject, eventdata, handles)
+if strcmp(get(handles.imageDirectory,'String'), ' ')
+    errordlg('Valid directory must be chosen');
+else %VALIDAR SE JA EXISTE DATASET DE TREINO!!!!
+    wb = waitbar(.5,'Processing Test Samples...');
+    
+    [testingSet,targetTrainingSet] = datasetGenerator(get(handles.imageDirectory,'String'),0,handles.currentImageSize,handles.currentBoundaries,handles.currentHogFeatures,0,'');
+    
+    delete(wb);
+    helpdlg('Testing complete!');
+end
 % --- END *TEST SAMPLES* END ---
 
 % --- START *TEST DRAWINGS* START ---
@@ -342,7 +380,7 @@ coords=get(src,'currentpoint'); %since this is the axes callback, src=gca
 x=coords(1,1,1);
 y=coords(1,2,1);
 
-r=line(x, y, 'color', 'black', 'LineWidth', 2, 'hittest', 'off'); %turning     hittset off allows you to draw new lines that start on top of an existing line.
+r=line(x, y, 'color', 'black', 'LineWidth', 4, 'hittest', 'off'); %turning     hittset off allows you to draw new lines that start on top of an existing line.
 set(gcf,'windowbuttonmotionfcn',{@continue_pencil,r})
 set(gcf,'windowbuttonupfcn',@done_pencil)
 
@@ -377,3 +415,26 @@ else
     set(handles.drawingTestResult,'String','Image is inconclusive...');
 end
 % --- END *TEST DRAWINGS* END ---
+
+
+
+function edit13_Callback(hObject, eventdata, handles)
+% hObject    handle to edit13 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit13 as text
+%        str2double(get(hObject,'String')) returns contents of edit13 as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function edit13_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit13 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
