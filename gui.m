@@ -31,6 +31,7 @@ handles.currentTargetTrainingSet = [];
 % Network Training variables
 handles.numNeuronsPerLayer = [10 10 10];
 handles.activFunctionPerLayer = {'poslin' 'poslin' 'poslin'};
+handles.trainedNetwork = [];
 % Update handles structure
 guidata(hObject, handles);
 
@@ -41,7 +42,7 @@ varargout{1} = handles.output;
 % --- START *GENERATE DATASET* START ---
 % --- Executes on button press in selectFolderDatasetBtn.
 function selectFolderDatasetBtn_Callback(hObject, eventdata, handles)
-dir = uigetdir();
+dir = uigetdir('Imagens');
 if ~isequal(dir,0)
     if ispc; slash = '\'; else; slash = '/'; end
     set(handles.imageDirectory, 'String', strcat(dir,slash));
@@ -138,10 +139,23 @@ else
 end
 % --- END *GENERATE DATASET* END ---
 
-% --- START *IMPORT DATASET* START ---
-% --- Executes on button press in selectDatasetBtn.
-function selectDatasetBtn_Callback(hObject, eventdata, handles)
-file = uigetfile('Datasets','*.mat');
+% --- START *IMPORT DATASET / NETWORK* START ---
+% --- Executes when selected object is changed in selectImportBtnGroup.
+function selectImportBtnGroup_SelectionChangedFcn(hObject, eventdata, handles)
+if get(get(handles.selectImportBtnGroup,'SelectedObject'),'String') == 'Dataset'
+    set(handles.selectImportBtn, 'String', 'Select Dataset');
+else
+    set(handles.selectImportBtn, 'String', 'Select Network');
+end
+
+% --- Executes on button press in selectImportBtn.
+function selectImportBtn_Callback(hObject, eventdata, handles)
+if get(get(handles.selectImportBtnGroup,'SelectedObject'),'String') == 'Dataset'
+    file = uigetfile('Datasets','*.mat');
+else
+    file = uigetfile('Networks','*.mat');
+end
+
 if ~isequal(file,0)
     set(handles.datasetDirectory, 'String', file);
 end
@@ -170,9 +184,18 @@ else
     delete(wb);
     helpdlg('Dataset Imported!');
 end
-% --- END *IMPORT DATASET* END ---
+% --- END *IMPORT DATASET / NETWORK* END ---
 
 % --- START *NETWORK TRAINING* START ---
+% --- Executes on selection change in trainingAlgorithm.
+function trainingAlgorithm_Callback(hObject, eventdata, handles)
+
+% --- Executes during object creation, after setting all properties.
+function trainingAlgorithm_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
 % --- Executes on selection change in trainingFunction.
 function trainingFunction_Callback(hObject, eventdata, handles)
 
@@ -202,7 +225,7 @@ function numHiddenLayersDropdown_CreateFcn(hObject, eventdata, handles)
 if ispc
     set(hObject,'Position',[32.2 16.462 8.6 1.923]);
 else
-    set(hObject,'Position',[32.2 16.462 8.6 1.923]);
+    set(hObject,'Position',[32.2 10.938 8.6 1.923]);
 end
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
@@ -213,7 +236,7 @@ function confHiddenLayerText_CreateFcn(hObject, eventdata, handles)
 if ispc
     set(hObject,'Position',[4.8 14.769 36.5 1.077]);
 else
-    set(hObject,'Position',[4.8 14.769 30.8 1.077]);
+    set(hObject,'Position',[4.8 9.8 30.8 1.077]);
 end
 
 % --- Executes when selected object is changed in confHiddenLayerSelection.
@@ -275,8 +298,7 @@ end
 % --- Executes on selection change in activationFunction.
 function activationFunction_Callback(hObject, eventdata, handles)
 activationFunctions = get(handles.activationFunction,'String');
-handles.activFunctionPerLayer{str2num(get(get(handles.confHiddenLayerSelection,'SelectedObject'),'String'))} = cellstr(activationFunctions{get(handles.activationFunction,'Value')});
-% handles.activFunctionPerLayer(str2num(get(get(handles.confHiddenLayerSelection,'SelectedObject'),'String')))
+handles.activFunctionPerLayer{str2num(get(get(handles.confHiddenLayerSelection,'SelectedObject'),'String'))} = activationFunctions{get(handles.activationFunction,'Value')};
 guidata(hObject, handles);
 
 % --- Executes during object creation, after setting all properties.
@@ -290,7 +312,7 @@ function trainingRepetitionsText_CreateFcn(hObject, eventdata, handles)
 if ispc
     set(hObject,'Position',[3.2 7.625 54 1.062]);
 else
-    set(hObject,'Position',[4.714 7.625 47.429 1.062]);
+    set(hObject,'Position',[4.714 4.0 47.429 1.062]);
 end
 
 function trainingRepetitions_Callback(hObject, eventdata, handles)
@@ -300,39 +322,60 @@ function trainingRepetitions_CreateFcn(hObject, eventdata, handles)
 if ispc
     set(hObject,'Position',[214.5 72 27.75 16.5]);
 else
-    set(hObject,'Position',[273 90 36.75 16.5]);
+    set(hObject,'Position',[273 46.5 36.75 16.5]);
 end
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+% --- Executes during object creation, after setting all properties.
+function networkPrecision_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
 
 % --- Executes on button press in trainNetworkBtn.
 function trainNetworkBtn_Callback(hObject, eventdata, handles)
-% strings = get(handles.activationFunction,'String');
-% teste = strings{get(handles.activationFunction,'Value')}
-
 tempHiddenLayersNeutrons = [];
-tempHiddenLayersActvFuncs = [];
-for tempHiidenLayerNum=1:get(handles.numHiddenLayersDropdown,'Value')
-   tempHiddenLayersNeutrons = [tempHiddenLayersNeutrons handles.numNeuronsPerLayer(tempHiidenLayerNum)];
+for tempHidenLayerNum=1:get(handles.numHiddenLayersDropdown,'Value')
+   tempHiddenLayersNeutrons = [tempHiddenLayersNeutrons handles.numNeuronsPerLayer(tempHidenLayerNum)];
 end
-% disp(tempHiddenLayersNeutrons);
 
-% disp(handles.numNeuronsPerLayer(tempHiidenLayerNum))
-% disp(handles.activFunctionPerLayer{tempHiidenLayerNum})
+networkTrainingAlgorithm = get(handles.trainingAlgorithm,'Value');
+switch networkTrainingAlgorithm
+    case 1
+        emptyNetwork = feedforwardnet(tempHiddenLayersNeutrons);
+    case 2
+        emptyNetwork = fitnet(tempHiddenLayersNeutrons);
+    case 3
+        emptyNetwork = patternnet(tempHiddenLayersNeutrons);
+    case 4
+        emptyNetwork = cascadeforwardnet(tempHiddenLayersNeutrons);
+end
 
-emptyNetwork = feedforwardnet(tempHiddenLayersNeutrons);
-% substring(string, i, l)
-trainingFunctionTemp = get(handles.trainingFunction,'String');
+trainingFunctionsTemp = get(handles.trainingFunction,'String');
+emptyNetwork.trainFcn = trainingFunctionsTemp{get(handles.trainingFunction,'Value')};
 
-emptyNetwork.trainFcn = trainingFunctionTemp(get(handles.trainingFunction,'Value'));
-% disp(get(handles.trainingFunction,'Value'))
+emptyNetwork.divideParam.trainRatio = str2num(get(handles.datasetTrainingDividend,'String'));
+emptyNetwork.divideParam.valRatio = str2num(get(handles.datasetValidationDividend,'String'));
+emptyNetwork.divideParam.testRatio = str2num(get(handles.datasetTestingDividend,'String'));
 
-trainedNetwork = train(emptyNetwork,handles.currentTrainingSet,handles.currentTargetTrainingSet,'useParallel','no');
-helpdlg('Network training ended succesfully!');
+for i=1:get(handles.numHiddenLayersDropdown,'Value')
+    emptyNetwork.layers{i}.transferFcn = handles.activFunctionPerLayer{i};
+end
 
-% precisaoTreino=100-perform(net,targetTrainingSet,net(trainingSet));
-% disp(strcat('Precisao Treino:',num2str(precisaoTreino)));
+% view(emptyNetwork)
+
+if emptyNetwork.divideParam.trainRatio + emptyNetwork.divideParam.valRatio + emptyNetwork.divideParam.testRatio ~= 100
+    errordlg('Sum of Dataset dividends must be 100!');
+elseif isempty(handles.currentTrainingSet) || isempty(handles.currentTargetTrainingSet)
+    errordlg('Valid Training and Target datasets must be loaded!');
+else
+    handles.trainedNetwork = train(emptyNetwork,handles.currentTrainingSet,handles.currentTargetTrainingSet,'useParallel','no');
+    guidata(hObject, handles);
+    set(handles.networkPrecision,'String',num2str(100-perform(handles.trainedNetwork,handles.currentTargetTrainingSet,handles.trainedNetwork(handles.currentTrainingSet))));
+    helpdlg('Network training ended succesfully!');
+end
 
 % --- Executes during object creation, after setting all properties.
 function trainNetworkBtn_CreateFcn(hObject, eventdata, handles)
@@ -346,7 +389,7 @@ end
 % --- START *TEST SAMPLES* START ---
 % --- Executes on button press in selectFolderTestSamplesBtn.
 function selectFolderTestSamplesBtn_Callback(hObject, eventdata, handles)
-dir = uigetdir();
+dir = uigetdir('Imagens');
 if ~isequal(dir,0)
     if ispc; slash = '\'; else; slash = '/'; end
     set(handles.testSamplesDirectory, 'String', strcat(dir,slash));
@@ -354,12 +397,16 @@ end
 
 % --- Executes on button press in importTestSamplesBtn.
 function importTestSamplesBtn_Callback(hObject, eventdata, handles)
-if strcmp(get(handles.imageDirectory,'String'), ' ')
+if strcmp(get(handles.testSamplesDirectory,'String'), ' ')
     errordlg('Valid directory must be chosen');
-else %VALIDAR SE JA EXISTE DATASET DE TREINO!!!!
+elseif isempty(handles.trainedNetwork)
+    errordlg('Network has to be trained in order to perform tests...');
+else
     wb = waitbar(.5,'Processing Test Samples...');
     
-    [testingSet,targetTrainingSet] = datasetGenerator(get(handles.imageDirectory,'String'),0,handles.currentImageSize,handles.currentBoundaries,handles.currentHogFeatures,0,'');
+    [testingSet,targetTrainingSet] = datasetGenerator(get(handles.testSamplesDirectory,'String'),0,handles.currentImageSize,handles.currentBoundaries,handles.currentHogFeatures,0,'');
+    
+    set(handles.precisionTestResult,'String',num2str(100-perform(handles.trainedNetwork,targetTrainingSet,handles.trainedNetwork(testingSet))));
     
     delete(wb);
     helpdlg('Testing complete!');
@@ -372,7 +419,7 @@ function axesUserDraw_ButtonDownFcn(hObject, eventdata, handles)
 userDraw(handles);
 
 function userDraw(handles)
-A=handles.axesUserDraw; % axesUserDraw is tag of my axes
+A=handles.axesUserDraw;
 set(A,'buttondownfcn',@start_pencil)
 
 function start_pencil(src,eventdata)
@@ -397,7 +444,7 @@ newy=[lasty y];
 set(r,'xdata',newx,'ydata',newy);
 
 function done_pencil(src,evendata)
-%all this funciton does is turn the motion function off
+%all this function does is turn the motion function off
 set(gcf,'windowbuttonmotionfcn','')
 set(gcf,'windowbuttonupfcn','')
 
@@ -412,29 +459,8 @@ if isempty(get(handles.axesUserDraw,'Children'))
     errordlg('Valid image must be drown');
 else
     drawing = frame2im(getframe(handles.axesUserDraw));
+    disp(drawing)
+%     processedImage =  imageProcesser(drawing,handles.currentImageSize,0,1);
     set(handles.drawingTestResult,'String','Image is inconclusive...');
 end
 % --- END *TEST DRAWINGS* END ---
-
-
-
-function edit13_Callback(hObject, eventdata, handles)
-% hObject    handle to edit13 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of edit13 as text
-%        str2double(get(hObject,'String')) returns contents of edit13 as a double
-
-
-% --- Executes during object creation, after setting all properties.
-function edit13_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit13 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end

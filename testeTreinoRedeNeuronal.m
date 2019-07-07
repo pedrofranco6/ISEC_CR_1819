@@ -2,6 +2,12 @@ close all;clearvars;clc;
 
 datasetTrainingDir = 'Imagens/Formas_2/';
 datasetTestingDir = 'Imagens/Formas_3/';
+netTrainAlgorithm = 1;
+netLayers = [10];
+numLayers = 1;
+trainRatio = 70;
+valRatio = 15;
+testRatio = 15;
 numRotations = 0;
 imageSize = 20;
 hogFeatures = 1;
@@ -21,18 +27,46 @@ trainFunction = 'trainlm';
 % 'traingdm' % Gradient Descent with Momentum
 % 'traingd' % Gradient Descent
 
+actvFunc = {'poslin' 'poslin' 'poslin'};
+% poslin
+% tansig
+% logsig
+% radbas
+% netinv
+% hardlim
+% compet
+% purelin
+% softmax
+% tribas
+
+
+disp('*** START ***');
 tic
 [trainingSet,targetTrainingSet] = datasetGenerator(datasetTrainingDir,numRotations,imageSize,hogFeatures,boundaries,0,'');
 [testingSet,targetTestingSet] = datasetGenerator(datasetTestingDir,0,imageSize,hogFeatures,boundaries,0,'');
 toc
 
 fprintf('\n');
-tic
 for t=1:10
-%     net = feedforwardnet((10),trainFunction);
-    net = fitnet(10,trainFunction);
-%     net = patternnet(10,trainFunction);
-%     net = cascadeforwardnet(10,trainFunction);
+    tic
+    switch netTrainAlgorithm
+        case 1
+            net = feedforwardnet(netLayers,trainFunction);
+        case 2
+            net = fitnet(netLayers,trainFunction);
+        case 3
+            net = patternnet(netLayers,trainFunction);
+        case 4
+            net = cascadeforwardnet(netLayers,trainFunction);
+    end
+    
+    net.divideParam.trainRatio = trainRatio;
+    net.divideParam.valRatio = valRatio;
+    net.divideParam.testRatio = testRatio;
+    
+    for i=1:numLayers
+        net.layers{i}.transferFcn = actvFunc{i};
+    end
     
     disp(strcat('Rede:',num2str(t)));
     net = train(net,trainingSet,targetTrainingSet);
@@ -44,5 +78,6 @@ for t=1:10
     disp(strcat('Precisao Teste:',num2str(precisaoTeste)));
     
     fprintf('\n');
+    toc
 end
-toc
+disp('*** END ***');
