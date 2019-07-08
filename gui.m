@@ -457,10 +457,17 @@ set(handles.drawingTestResult,'String',' ');
 function testDraw_Callback(hObject, eventdata, handles)
 if isempty(get(handles.axesUserDraw,'Children'))
     errordlg('Valid image must be drown');
+elseif isempty(handles.trainedNetwork)
+    errordlg('Network has to be trained in order to test drawings...');
 else
     drawing = frame2im(getframe(handles.axesUserDraw));
-    disp(drawing)
-%     processedImage =  imageProcesser(drawing,handles.currentImageSize,0,1);
+    processedImage =  imageProcesser(drawing(:, :, 2),handles.currentImageSize,0,handles.currentBoundaries);
+    
+    if handles.currentHogFeatures == 1
+        processedImage = extractHOGFeatures(processedImage);
+    end
+    sim(handles.trainedNetwork,processedImage(:))
+
     set(handles.drawingTestResult,'String','Image is inconclusive...');
 end
 % --- END *TEST DRAWINGS* END ---
